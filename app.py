@@ -20,6 +20,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse, HTMLResponse
 
+from utils import get_license
 from xnxx import router as xnxx_router
 from xvideo import router as xvideos_router
 
@@ -72,6 +73,5 @@ def error(r, e):
 
 @app.get('/license', tags=['License'], response_class=HTMLResponse)
 def license_url():
-    with open('li_cen_se.html') as f:
-        return HTMLResponse(f.read())
+    return HTMLResponse(get_license)
 

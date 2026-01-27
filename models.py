@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from pydantic import BaseModel
 
+
 class VideoBlock(BaseModel):
     title: str | None = None
     link: str | None = None

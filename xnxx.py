@@ -27,6 +27,7 @@ from fastapi import APIRouter, Path, Query
 from requests import get
 
 from models import ResponseBlock, WatchBlock, VideoBlock
+from utils import get_pagination, get_related, get_script_content
 
 router = APIRouter(prefix='/xnxx', tags=['Xnxx'])
 
@@ -60,103 +61,56 @@ def xnxx(
     soup = BeautifulSoup(get(url, headers=headers).content, 'html.parser')
 
     if watch:
-        xv = VideoBlock()
+        vb = WatchBlock()
         if title := soup.find('div', class_='video-title'):
-            xv.title = title.find('strong').text.strip()
+            vb.title = title.find('strong').text.strip()
         if desc := soup.find('p', class_='video-description'):
-            xv.description = desc.text.strip()
+            vb.description = desc.text.strip()
         if mk := soup.find('a', class_='free-plate'):
-            xv.mk_name = mk.text.strip()
-            xv.mk_link = mk.get('href')
-        if script := soup.find('script', string=compile('video_related=')):
-            script = script.text
-            rela = loads(rsearch(r'\[\{.*}]', script).group().replace('\\/', '/'))
-
-            def get_resolution(r):
-                if r.get('fk') == 1:
-                    return '4K'
-                if r.get('td') == 1:
-                    return '1440p'
-                if r.get('hp') == 1:
-                    return '1080p'
-                if r.get('h') == 1:
-                    return '720p'
-                if r.get('hm') == 1:
-                    return '480p'
-                else:
-                    return '360p'
-
-            xv.related = [VideoBlock(
-                title=rd.get('t'),
-                link=rd.get('u'),
-                thumb=rd.get('i'),
-                thumb_sfw=rd.get('st1'),
-                thumb_mzl=rd.get('mu'),
-                pvv=rd.get('ipu'),
-                mk_name=rd.get('pn'),
-                mk_link=rd.get('pu'),
-                duration=rd.get('d'),
-                resolution=get_resolution(rd)
-            ) for rd in rela]
+            vb.mk_name = mk.text.strip()
+            vb.mk_link = mk.get('href')
+        vb.related = get_related(soup)
         if script := soup.find('script', crossorigin='anonymous', string=compile('html5player')).text:
-            stream = rsearch(r'VideoHLS.*\'', script).group()
-            thumb = rsearch(r'ThumbUrl.*\'', script).group()
-            thumb169 = rsearch(r'ThumbUrl169.*\'', script).group()
-            slide_minute = rsearch(r'ThumbSlideMinute.*\'', script).group()
-            slide_big = rsearch(r'ThumbSlideBig.*\'', script).group()
-            slide = rsearch(r'ThumbSlide.*\'', script).group()
-            xv.hls = stream[len('VideoHLS(\''):len(stream) - 1]
-            xv.thumb = thumb[len('ThumbUrl(\''):len(thumb) - 1]
-            xv.thumb169 = thumb169[len('ThumbUrl169(\''): len(thumb169) - 1]
-            xv.slide = slide[len('ThumbSlide(\''):len(slide) - 1]
-            xv.slide_big = slide_big[len('ThumbSlideBig(\''):len(slide_big) - 1]
-            xv.slide_minute = slide_minute[len('ThumbSlideMinute(\''):len(slide_minute) - 1]
-        return xv
+            vb.hls, vb.thumb, vb.thumb169, vb.slide, vb.slide_big, vb.slide_minute = get_script_content(script.text)
+        return vb
 
-    xnxx_response = ResponseBlock()
+    rb = ResponseBlock()
 
-    if pagi := soup.find('div', class_='pagination'):
-        if lastpage := pagi.find('a', class_='last-page'):
-            lp = lastpage.get('href')
-            xnxx_response.pages = int(lp[lp.rindex('/') + 1:])
+    rb.pages = get_pagination(soup)
 
-    for tb in soup.find_all('div', class_='thumb-block'):
-        _id = tb['data-id']
+    for bl in soup.find_all('div', class_='thumb-block'):
+
         xb = VideoBlock()
 
-        if title := tb.find('a', title=compile('.')):
+        if title := bl.find('a', title=compile('.')):
             xb.title = title.get('title')
             xb.link = title.get('href')
 
-        if mk := tb.find('a', href=compile('/porn-maker/')):
+        if mk := bl.find('a', href=compile('/porn-maker/')):
             xb.mk_name = mk.text.strip()
             xb.mk_link = mk.get('href')
 
-        if img := tb.find('img', id=f'pic_{_id}'):
+        if img := bl.find('img', id=f'pic_{bl['data-id']}'):
             xb.thumb = img.get('data-src')
             xb.thumb_sfw = img.get('data-sfwthumb')
             xb.thumb_mzl = img.get('data-mzl')
             xb.pvv = img.get('data-pvv')
 
-        if me := tb.find('p', class_='metadata'):
+        if me := bl.find('p', class_='metadata'):
             if duration := rsearch(r'\d+(min|sec)', me.text):
                 xb.duration = duration.group()
-            if rating := rsearch(r'\d+%', me.text):
-                xb.rating = rating.group()
-            if watched := rsearch(r'[\d.]+(B|M|k)?', me.text):
-                xb.watched = watched.group()
             if resolution := rsearch(r'\d+(K|p)', me.text):
                 xb.resolution = resolution.group()
 
-        xnxx_response.content.append(xb)
-    return xnxx_response
+        rb.content.append(xb)
+    return rb
 
 
 @router.get("/best")
 def xnxx_best(
         year: Annotated[int, Query(ge=1999, le=2026)] = 2025,
         month: Annotated[int, Query(ge=1, le=12)] = 12,
-        page: Annotated[int, Query()] = 0
+        page: Annotated[int, Query(alias='p', title='Page', description='Page')] = 0
 ) -> ResponseBlock:
     return xnxx(year=year, month=month, page=page)
 
@@ -164,7 +118,7 @@ def xnxx_best(
 @router.get("/search/{search}")
 def xnxx_search(
         search: Annotated[str, Path()],
-        page: Annotated[int, Query()] = 0
+        page: Annotated[int, Query(alias='p', title='Page', description='Page')] = 0
 ) -> ResponseBlock:
     return xnxx(search=search, page=page)
 

@@ -1,5 +1,5 @@
 """
-ScrapyAPI scrape some stuff for you.
+ScrapyAPI scrape some stuff.
 Copyright (C) 2026  Kanye Sue
 
 This program is free software: you can redistribute it and/or modify

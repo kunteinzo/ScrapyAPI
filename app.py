@@ -72,6 +72,6 @@ def error(r, e):
 
 @app.get('/license', tags=['License'], response_class=HTMLResponse)
 def license_url():
-    with open('LICENSE.html') as f:
+    with open('license_in_html.html') as f:
         return HTMLResponse(f.read())
 

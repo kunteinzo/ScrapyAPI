@@ -152,21 +152,21 @@ def xnxx(
     return xnxx_response
 
 
+@router.get("/best")
+def xnxx_best(
+        year: Annotated[int, Query(ge=1999, le=2026)] = 2025,
+        month: Annotated[int, Query(ge=1, le=12)] = 12,
+        page: Annotated[int, Query()] = 0
+) -> ResponseBlock:
+    return xnxx(year=year, month=month, page=page)
+
+
 @router.get("/search/{search}")
 def xnxx_search(
         search: Annotated[str, Path()],
         page: Annotated[int, Query()] = 0
 ) -> ResponseBlock:
-    return xnxx(search=search, page=page, mode=mode, period=period, length=length, quality=quality)
-
-
-@router.get("/best")
-def xnxx_best(
-        year: Annotated[int, Query(ge=1999, le=2026)],
-        month: Annotated[int, Query(ge=1, le=12)],
-        page: Annotated[int, Query()] = 0
-) -> ResponseBlock:
-    return xnxx(year=year, month=month, page=page)
+    return xnxx(search=search, page=page)
 
 
 @router.get("/watch")

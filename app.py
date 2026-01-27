@@ -29,16 +29,16 @@ app = FastAPI(
     # debug=True,
     title='ScrapyAPI',
     summary='ScrapyAPI scrape some stuff.',
-    description="""## It scrape some stuff.""",
+    # description="""## It scrape some stuff.""",
     version="0.0.1",
     servers=[
         dict(url='http://hellohost.tz:8000', description='Dev Server'),
         dict(url='http://127.0.0.1:8000', description='Local Dev Server'),
     ],
-    terms_of_service='https://example.com',
+    # terms_of_service='https://example.com',
     contact=dict(
         name='Kanye Sue',
-        url='https://example.com',
+        # url='https://example.com',
         email='kanye4112@gmail.com',
     ),
     license_info=dict(
@@ -59,7 +59,6 @@ app.add_middleware(
     allow_headers=['*']
 )
 
-
 app.include_router(xnxx_router)
 app.include_router(xvideos_router)
 
@@ -75,4 +74,3 @@ def error(r, e):
 @app.get('/license', tags=['License'], response_class=HTMLResponse)
 def license_url():
     return HTMLResponse(get_license)
-

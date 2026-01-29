@@ -1,0 +1,16 @@
+services:
+  server:
+    image: nginx:stable
+    container_name: nginx
+    ports:
+      - '80:80'
+    volumes:
+      - ./conf.d:/etc/nginx/conf.d
+    depends_on:
+      - hellohost.tz
+    restart: unless-stopped
+
+  hellohost.tz:
+    build: .
+    container_name: hellohost.tz
+    restart: unless-stopped

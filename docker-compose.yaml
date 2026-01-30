@@ -5,7 +5,11 @@ services:
     ports:
       - '80:80'
     volumes:
-      - ./conf.d:/etc/nginx/conf.d
+#      - ./conf.d:/etc/nginx/conf.d
+      - type: bind
+        read_only: true
+        source: ./conf.d
+        target: /etc/nginx/conf.d
     depends_on:
       - hellohost.tz
     restart: unless-stopped

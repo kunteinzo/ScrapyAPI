@@ -22,10 +22,11 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse, HTMLResponse
 from starlette.websockets import WebSocket
 
-from mahar import router as mahar_router
 from utils import get_license
-from xnxx import router as xnxx_router
-from xvideo import router as xvideos_router
+from route_mahar import router as mahar_router
+from route_websocket import router as ws_router
+from route_xnxx import router as xnxx_router
+from route_xvideos import router as xvideos_router
 
 app = FastAPI(
     # debug=True,
@@ -62,6 +63,7 @@ app.add_middleware(
 )
 
 app.include_router(mahar_router)
+app.include_router(ws_router)
 app.include_router(xnxx_router)
 app.include_router(xvideos_router)
 
@@ -78,11 +80,3 @@ def error(r, e):
 def license_url():
     return HTMLResponse(get_license)
 
-
-@app.websocket('/ws/test')
-async def ws_test(ws: WebSocket):
-    await ws.accept()
-    await ws.send_text('Connected')
-    while True:
-        data = await ws.receive_text()
-        await ws.send_text(f'Message: {data}')

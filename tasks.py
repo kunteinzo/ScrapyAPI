@@ -17,15 +17,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from time import sleep
-
-from celery_app import celery_app
+import celery_app
 from tasks_mahar import mroot
 
 
-@celery_app.task
-def hi():
-    sleep(20)
+@celery_app.task(bind=True)
+def hi(self):
+    from time import sleep
+    for i in range(0, 20):
+        self.update_state(
+            state='PROGRESS',
+            meta={
+                'current': i
+            }
+        )
+        sleep(1)
     return 'hi'
 
 

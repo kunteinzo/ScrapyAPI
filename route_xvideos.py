@@ -67,7 +67,7 @@ def xvideos(
 
     for bl in soup.find_all('div', class_='thumb-block'):
         xb = VideoBlock()
-        if title := bl.find('a', title=compile('.')):
+        if title := bl.find('a', title=compile('')):
             xb.title = title.get('title')
             xb.link = title.get('href')
         if img := bl.find('img', id=f'pic_{bl["data-id"]}'):

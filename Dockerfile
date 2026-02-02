@@ -13,4 +13,4 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 
 RUN chown -R appuser:appuser /app
 
-# ENTRYPOINT ["/app/run_api.sh"]
+# ENTRYPOINT ["/app/run.sh"]

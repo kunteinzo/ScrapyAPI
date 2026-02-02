@@ -9,4 +9,8 @@ COPY *.sh .
 
 RUN pip install -U pip && pip install --no-cache-dir -r requirements.txt
 
-ENTRYPOINT ["/app/run_api.sh"]
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+RUN chown -R appuser:appuser /app
+
+# ENTRYPOINT ["/app/run_api.sh"]

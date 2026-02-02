@@ -20,7 +20,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse, HTMLResponse
+from starlette.websockets import WebSocket
 
+from mahar import router as mahar_router
 from utils import get_license
 from xnxx import router as xnxx_router
 from xvideo import router as xvideos_router
@@ -29,7 +31,7 @@ app = FastAPI(
     # debug=True,
     title='ScrapyAPI',
     summary='ScrapyAPI scrape some stuff.',
-    # description="""## It scrape some stuff.""",
+    # description="""## It scrapes some stuff.""",
     version="0.0.1",
     servers=[
         dict(url='http://hellohost.tz:8000', description='Dev Server'),
@@ -52,13 +54,14 @@ app.add_middleware(
     allow_origins=[
         'http://localhost:8000',
         'http://127.0.0.1:8000',
-        'http://hellohost.tz:8000',
+        'http://hellohost.tz',
     ],
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*']
 )
 
+app.include_router(mahar_router)
 app.include_router(xnxx_router)
 app.include_router(xvideos_router)
 
@@ -74,3 +77,12 @@ def error(r, e):
 @app.get('/license', tags=['License'], response_class=HTMLResponse)
 def license_url():
     return HTMLResponse(get_license)
+
+
+@app.websocket('/ws/test')
+async def ws_test(ws: WebSocket):
+    await ws.accept()
+    await ws.send_text('Connected')
+    while True:
+        data = await ws.receive_text()
+        await ws.send_text(f'Message: {data}')

@@ -3,7 +3,7 @@ services:
     image: nginx:stable
     container_name: nginx
     ports:
-      - '80:80'
+      - "80:80"
     volumes:
 #      - ./conf.d:/etc/nginx/conf.d
       - type: bind
@@ -17,4 +17,22 @@ services:
   hellohost.tz:
     build: .
     container_name: hellohost.tz
+    command: gunicorn app:app -k uvicorn.workers.UvicornWorker -w 2 -b 0.0.0.0:8000
+    depends_on:
+      - redis
+    restart: unless-stopped
+  
+  celery:
+    build: .
+    container_name: celery
+    command: celery -A tasks worker --loglevel=info
+    depends_on:
+      - redis
+    restart: unless-stopped
+  
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
     restart: unless-stopped

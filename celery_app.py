@@ -26,8 +26,8 @@ load_dotenv()
 
 celery_app = Celery(
     "tasks",
-    broker=f'{os.getenv("REDIS_URL")}/0',
-    backend=f'{os.getenv("REDIS_URL")}/1'
+    broker='redis://redis:6379/0',
+    backend='redis://redis:6379/1'
 )
 
 celery_app.conf.result_expires = 600

@@ -21,10 +21,10 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse, HTMLResponse
 
-from route.mahar import router as mahar_router
-from route.websocket import router as ws_router
-from route.xnxx import router as xnxx_router
-from route.xvideos import router as xvideos_router
+from route_mahar import router as mahar_router
+from route_websocket import router as ws_router
+from route_xnxx import router as xnxx_router
+from route_xvideos import router as xvideos_router
 from utils import get_license
 
 app = FastAPI(

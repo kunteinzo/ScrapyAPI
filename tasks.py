@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 from celery_app import celery_app
-from scrape.mahar import mroot
+from scraper_mahar import mroot
 
 
 @celery_app.task(bind=True)

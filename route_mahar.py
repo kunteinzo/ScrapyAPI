@@ -22,7 +22,7 @@ from typing import Annotated
 from fastapi import APIRouter, Path
 
 from celery_app import celery_app
-from task.tasks import mahar_root
+from tasks import mahar_root
 
 router = APIRouter(prefix='/mahar', tags=['Mahar'])
 

@@ -33,10 +33,10 @@ app = FastAPI(
     summary='ScrapyAPI scrape some stuff.',
     # description="""## It scrapes some stuff.""",
     version="0.0.1",
-    servers=[
-        dict(url='http://hellohost.tz:8000', description='Dev Server'),
-        dict(url='http://127.0.0.1:8000', description='Local Dev Server'),
-    ],
+    # servers=[
+    #     dict(url='http://hellohost.tz:8000', description='Dev Server'),
+    #     dict(url='http://127.0.0.1:8000', description='Local Dev Server'),
+    # ],
     # terms_of_service='https://example.com',
     contact=dict(
         name='Kanye Sue',
@@ -51,11 +51,7 @@ app = FastAPI(
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        'http://localhost:8000',
-        'http://127.0.0.1:8000',
-        'http://hellohost.tz',
-    ],
+    allow_origins=['*'],
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*']
@@ -71,8 +67,7 @@ app.include_router(xvideos_router)
 def error(r, e):
     return JSONResponse(
         dict(
-            msg="Something is wrong but IDK",
-            req=str(r),
+            msg="Something went wrong!",
             err=str(e)
         ),
         500

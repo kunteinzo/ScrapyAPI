@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 from celery_app import celery_app
-from scraper_mahar import mroot
+from scrapers import mahar_deep_scrape
 
 
 @celery_app.task(bind=True)
@@ -37,4 +37,4 @@ def hi(self):
 
 @celery_app.task
 def mahar_root():
-    return mroot()
+    return mahar_deep_scrape()

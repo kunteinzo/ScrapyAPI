@@ -21,14 +21,14 @@ from fastapi import WebSocket
 from random import randint
 from uuid import uuid4
 
-class Wsu():
+class Wsu:
     
     def __init__(self, ws: WebSocket):
         self.uid = str(uuid4())
         self.ws = ws
 
 
-class WSM():
+class WSM:
     
     
     def __init__(self):

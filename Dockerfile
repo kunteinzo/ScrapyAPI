@@ -2,10 +2,6 @@ FROM python:slim
 LABEL authors="kunteinzo"
 
 WORKDIR /app
-COPY route .
-COPY scrape .
-COPY task .
-COPY websocket .
 COPY *.py .
 COPY *.txt .
 COPY *.json .

@@ -17,12 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
-
 from celery import Celery
-from dotenv import load_dotenv
-
-load_dotenv()
 
 celery_app = Celery(
     "tasks",

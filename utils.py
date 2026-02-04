@@ -16,12 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from json import loads
-from re import search, compile
 
-from bs4 import BeautifulSoup
-
-from models import VideoBlock
 
 get_license = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -720,68 +715,3 @@ Public License instead of this License.  But first, please read
 
 </body></html>
 """
-
-
-def get_resolution(r):
-    if r.get('fk') == 1:
-        return '4K'
-    if r.get('td') == 1:
-        return '1440p'
-    if r.get('hp') == 1:
-        return '1080p'
-    if r.get('h') == 1:
-        return '720p'
-    if r.get('hm') == 1:
-        return '480p'
-    else:
-        return '360p'
-
-
-def get_pagination(soup: BeautifulSoup):
-    if pagi := soup.find('div', class_='pagination'):
-        if lp := pagi.find('a', class_='last-page'):
-            lp = lp.get('href')
-            return int(lp[lp.rindex('/') + 1:])
-    return None
-
-
-def get_related(soup: BeautifulSoup):
-    if script := soup.find('script', string=compile('video_related=')):
-        script = script.text.replace('\\/', '/')
-        related = loads(search('\[\{.*}]', script).group())
-        return [VideoBlock(
-            title=rd.get('t'),
-            link=rd.get('u'),
-            thumb=rd.get('i'),
-            thumb_sfw=rd.get('st1'),
-            thumb_mzl=rd.get('mu'),
-            pvv=rd.get('ipu'),
-            mk_name=rd.get('pn'),
-            mk_link=rd.get('pu'),
-            duration=rd.get('d'),
-            resolution=get_resolution(rd)
-        ) for rd in related]
-    return None
-
-
-def get_script_content(script: str):
-    hls = thumb = thumb169 = slide = slide_big = slide_minute = None
-    if _hls := search(r'VideoHLS.*\'', script):
-        hls = _hls.group()
-        hls = hls[len('VideoHLS(\''):len(hls) - 1]
-    if _thumb := search(r'ThumbUrl.*\'', script):
-        thumb = _thumb.group()
-        thumb = thumb[len('ThumbUrl(\''):len(thumb) - 1]
-    if _thumb169 := search(r'ThumbUrl169.*\'', script):
-        thumb169 = _thumb169.group()
-        thumb169 = thumb169[len('ThumbUrl169(\''): len(thumb169) - 1]
-    if _slide_minute := search(r'ThumbSlideMinute.*\'', script):
-        slide_minute = _slide_minute.group()
-        slide_minute = slide_minute[len('ThumbSlideMinute(\''):len(slide_minute) - 1]
-    if _slide_big := search(r'ThumbSlideBig.*\'', script):
-        slide_big = _slide_big.group()
-        slide_big = slide_big[len('ThumbSlideBig(\''):len(slide_big) - 1]
-    if _slide := search(r'ThumbSlide.*\'', script):
-        slide = _slide.group()
-        slide = slide[len('ThumbSlide(\''):len(slide) - 1]
-    return hls, thumb, thumb169, slide, slide_big, slide_minute

@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from typing import Annotated
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect, status
 
-from ws_manager import WSM
+from websocket.manager import WSM
 
 router = APIRouter(prefix='/ws', tags=['WebSocket'])
 

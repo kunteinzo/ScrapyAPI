@@ -17,6 +17,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from celery import Celery
+import os
 
-celery_app = Celery("tasks", broker='redis://localhost:6379/0', backend='redis://localhost:6379/1')
+from celery import Celery
+from dotenv import load_dotenv
+
+load_dotenv()
+
+celery_app = Celery(
+    "tasks",
+    broker=f'{os.getenv("REDIS_URL")}/0',
+    backend=f'{os.getenv("REDIS_URL")}/1'
+)
+
+celery_app.conf.result_expires = 600

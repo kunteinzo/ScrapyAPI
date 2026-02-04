@@ -1,5 +1,6 @@
 asyncio
 beautifulsoup4
+python-dotenv
 fastapi[standard]
 requests
 gunicorn

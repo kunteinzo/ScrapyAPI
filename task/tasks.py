@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import celery_app
-from tasks_mahar import mroot
+from celery_app import celery_app
+from scrape.mahar import mroot
 
 
 @celery_app.task(bind=True)

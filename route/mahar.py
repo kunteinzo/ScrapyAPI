@@ -21,8 +21,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Path
 
-import celery_app
-from tasks import mahar_root
+from celery_app import celery_app
+from task.tasks import mahar_root
 
 router = APIRouter(prefix='/mahar', tags=['Mahar'])
 

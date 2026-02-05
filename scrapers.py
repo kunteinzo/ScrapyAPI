@@ -154,7 +154,7 @@ def get_pagination(soup: BeautifulSoup):
 def get_related(soup: BeautifulSoup):
     if script := soup.find('script', string=compile('video_related=')):
         script = script.text.replace('\\/', '/')
-        related = loads(rsearch('\[\{.*}]', script).group())
+        related = loads(rsearch("\\[\\{.*}]", script).group())
         return [VideoBlock(
             title=rd.get('t'),
             link=rd.get('u'),
